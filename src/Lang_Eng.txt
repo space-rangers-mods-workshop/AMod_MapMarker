@@ -1,0 +1,7 @@
+Script ~{
+    AMod_MapMarker ~{
+        Prompt=Enter system/planet name:
+        NotFound=No matches found.
+        DeleteMark=Delete the map marker?
+    }
+}

@@ -1,0 +1,7 @@
+Script ~{
+    AMod_MapMarker ~{
+        Prompt=Введите имя системы/планеты:
+        NotFound=Совпадений не обнаружено.
+        DeleteMark=Удалить метку с карты?
+    }
+}

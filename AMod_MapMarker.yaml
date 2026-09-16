@@ -1,0 +1,116 @@
+mod: AMod_MapMarker
+
+# public — keys match ModuleInfo.txt; rendered into ModuleInfo.txt (build_amod_mapmarker.py)
+# and the card README.md (generate_card.py)
+info:
+  Name: AMod_MapMarker
+  Author: "Huk, Xenomorphchyma, ringill"
+  Conflict: XenoBigGalaxy
+  Priority: 1
+  Section: Разное
+  SectionEng: Miscellaneous
+  Languages: Rus,Eng
+  SmallDescription: Добавляет возможность поставить метку на систему галакарты
+  SmallDescriptionEng: Adds the ability to place a marker on a galaxy-map system
+  FullDescription: >-
+    Две кнопки на галакарте ставят и снимают метку (стрелку) на выбранной системе или планете.
+    Координаты метки рассчитаны под стандартную галакарту (vanilla-размер). Мод конфликтует
+    с XenoBigGalaxy, который меняет размер галактики и встраивает собственные кнопки метки.
+    Поддерживает русский и английский языки.
+  FullDescriptionEng: >-
+    Two buttons on the galaxy map place and remove a marker (arrow) on the chosen system or planet.
+    Marker coordinates are tuned to the standard-size galaxy map. The mod conflicts with
+    XenoBigGalaxy, which resizes the galaxy and embeds its own marker buttons. English and
+    Russian are supported.
+
+# public — the sources this mod is based on / derived from, rendered in the card README.md
+based_on:
+  - source: 🏛️ https://github.com/space-rangers-mods-museum/AMod_MapMarker
+    note: AMod_MapMarker - Huk (the original marker)
+  - source: Xenomorphchyma - XenoBigGalaxy (SRHD-XenoModKit)
+    note: >-
+      Guarded star/planet search idiom ported from XenoBigGalaxy into the marker code (null star/planet
+      checks, invisible/far-sector skip via StarToCon/SectorVisible). Coordinate scaling is NOT ported -
+      the marker is tuned to the standard 768x527 map and declares Conflict=XenoBigGalaxy, which resizes
+      the galaxy and defines its own scaling constants.
+
+# public — how the readable sources were produced, rendered in the card README.md
+acquire:
+  # base sources (museum exhibit) → src/
+  - ref: https://github.com/space-rangers-mods-museum/AMod_MapMarker
+    note: >-
+      Take the museum AMod_MapMarker exhibit as the merge base. src/Main.txt and src/CacheData.txt are the
+      decoded museum .dat sources; the 7 .gi textures already live in src/resources/Data/Image/. ModuleInfo.txt
+      is NOT kept in src/ - the fork's ModuleInfo (Section=Miscellaneous, SectionEng=Miscellaneous,
+      Languages=Rus,Eng + Eng descriptions) is rendered by build_amod_mapmarker.py from this YAML's info block.
+      The original museum ModuleInfo (Section=HukMods, no Eng fields) stays preserved in the museum exhibit.
+    command: >-
+      powershell -NoProfile -Command "Copy-Item ..\..\museum\AMod_MapMarker\* AMod_MapMarker\src\ -Recurse"
+    date: 2026-09-07
+
+  # universality — port Xenomorphchyma's improvements into src/Main.txt
+  - ref: Main.txt
+    note: >-
+      Replace the MarkerLeftButton/MarkerRightButton OnPressCode bodies with the universality logic Xenomorphchyma
+      uses in XenoBigGalaxy, recalibrated to the BASE galaxy panel. Base galaxy map area is exactly 768x527 px
+      (tmp/base_main_origin.txt: Circles JampMaxShr/JampMaxColor/RadarDetect Size=768,527; Panel{Name=Map}
+      Size=768,527; FormGalaxy2.2bg Size=768,527) - the original AMod_MapMarker hardcoded this as *768/*527 with
+      fixed divisors 150/100 plus a /5 fudge. Universal form (Xeno's structure, MapWidth=768/MapHeight=527 kept):
+      x=CoordX(star)*768/GalaxySizeX; y=CoordY(star)*527/GalaxySizeY, where GalaxySizeX/Y come from
+      CT('Constellations.GalaxySizeX/Y'). The /5 fudge is dropped (Xeno dropped it). Loop guards added:
+      star=GalaxyStar(i); if(!star)continue; dword star_sector=StarToCon(star); if(!star_sector)continue;
+      if(!SectorVisible(star_sector))continue; dword planet=StarPlanets(star,j); if(planet && ...). Star/planet
+      counts cached (int galaxy_star_count=GalaxyStars(); int star_planet_count=StarPlanets(star);). Star coords
+      come from the cached `star` variable (the one whose name matched), not a re-fetch GalaxyStar(i). Panel
+      structure/Pos/Size/names/images stay byte-identical to the working museum Main.txt - only the OnPressCode
+      bodies change, and the three literals become CT() lookups.
+    command: ""
+    date: 2026-09-07
+
+  # revert universality scaling — declare Conflict=XenoBigGalaxy, drop the CT-based divisors
+  - ref: Main.txt
+    note: >-
+      Revert the coordinate part of the universality experiment. CT('Constellations.GalaxySizeX/Y') returns 0 on a
+      standard install (the constants are XenoBigGalaxy's OWN - it injects them via build.ps1 because it is the
+      resizer), which made the marker search throw EDivByZero. Rather than guess on a foreign galaxy's size, the
+      marker now declares Conflict=XenoBigGalaxy (ModuleInfo) - XenoBigGalaxy already declares a conflict with
+      AMod_MapMarker because it embeds Huk's marker - and hardcodes the museum-proven standard-map divisors:
+      x=CoordX(star)*768/150; y=CoordY(star)*527/100 (keeps the /5 centering fudge). The guarded star/planet
+      search loop (null checks + SectorVisible) is kept. Museum AMod_MapMarker stays untouched.
+    command: ""
+    date: 2026-09-07
+
+  # English — per-language strings via CT in CFG/Rus+Eng Lang.dat
+  - ref: src/Lang_Rus.txt, src/Lang_Eng.txt
+    note: >-
+      Add English support the SRHD way. Replace the three MessageBox/MessageBoxYesNo/TextBox literals in
+      src/Main.txt with CT() fetches: CT('Script.AMod_MapMarker.Prompt') (TextBox caption),
+      CT('Script.AMod_MapMarker.NotFound') (MessageBox), CT('Script.AMod_MapMarker.DeleteMark') (MessageBoxYesNo).
+      The string values live in per-language config Lang.dat files under a Script.AMod_MapMarker block. The engine
+      resolves CT on the active-language Lang.dat, so Rus/Lang.dat and Eng/Lang.dat each carry the same
+      Script.AMod_MapMarker keys in the matching language. fmt=HDMain signed for both Lang.dat. ModuleInfo declares
+      Languages=Rus,Eng.
+      Note: MessageBox(CT(...)) is a proven literal-replacement idiom; TextBox(CT(...)) is equivalent at the engine
+      level (SF_TextBox @ aScriptFun_.pas:13147 reads the already-evaluated av[1].VStr, so the first arg is any
+      expression) but has no known literal-replacement precedent in the mod corpus - confirm the prompt in-game.
+    command: ""
+    date: 2026-09-07
+
+  # build the CURRENT variant via rangers.dat — assemble mod/
+  - ref: build_amod_mapmarker.py
+    note: >-
+      Assemble mod/ from the readable sources. Run from workshop/AMod_MapMarker:
+      ..\..\.venv\Scripts\python.exe build_amod_mapmarker.py
+      Layout (conventions from installed game reference mods):
+        mod/ModuleInfo.txt          UTF-16 LE BOM, rendered from this YAML's info block
+        mod/CFG/Main.dat            from src/Main.txt           fmt=HDMain   unsigned
+        mod/CFG/CacheData.dat       from src/CacheData.txt      fmt=HDCache  unsigned (Bm.Image block)
+        mod/CFG/Rus/Lang.dat        from src/Lang_Rus.txt       fmt=HDMain   signed (Script.AMod_MapMarker strings)
+        mod/CFG/Eng/Lang.dat        from src/Lang_Eng.txt       fmt=HDMain   signed (Script.AMod_MapMarker strings)
+        mod/Data/Image/*.gi         the 7 textures (copied from src/resources/Data/Image/)
+      CacheData path is game-root-relative (Mods\Miscellaneous\AMod_MapMarker\Data\Image\<name>.gi), matching the
+      ModuleInfo Section=Miscellaneous/SectionEng=Miscellaneous. This mod is a pure ML panel overlay - no Data/Script,
+      no .scr stub. Deployment under the game's Mods\ folder is the user's task.
+    command: >-
+      ..\..\.venv\Scripts\python.exe build_amod_mapmarker.py
+    date: 2026-09-07
