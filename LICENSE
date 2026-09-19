@@ -2,13 +2,13 @@ AMod_MapMarker by Huk, Xenomorphchyma, ringill is licensed under the Creative Co
 Attribution-NonCommercial-ShareAlike 4.0 International License. To view a
 copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/.
 
+Source: https://github.com/space-rangers-mods-workshop/AMod_MapMarker
 License: https://creativecommons.org/licenses/by-nc-sa/4.0/
 
 This work is based on / derived from the following original sources:
 
-- AMod_MapMarker - Huk — https://github.com/space-rangers-mods-museum/AMod_MapMarker
-- XenoBigGalaxy (universality code) - Xenomorphchyma, Huk — universality pattern from the XenoBigGalaxy marker code
-- SRHD XenoModKit - Xenomorphchyma — https://github.com/Xenomorphchyma (the SRHD-XenoModKit toolchain)
+- AMod_MapMarker - Huk (the original marker) — https://github.com/space-rangers-mods-museum/AMod_MapMarker
+- Xenomorphchyma - XenoBigGalaxy (SRHD-XenoModKit) Guarded star/planet search idiom ported from XenoBigGalaxy into the marker code (null star/planet checks, invisible/far-sector skip via StarToCon/SectorVisible). Coordinate scaling is NOT ported - the marker is tuned to the standard 768x527 map and declares Conflict=XenoBigGalaxy, which resizes the galaxy and defines its own scaling constants. — https://github.com/Xenomorphchyma/SRHD-XenoModKit
 
 =======================================================================
 
