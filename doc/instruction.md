@@ -20,13 +20,15 @@ Download the mod with MO2 mod manager and deploy it — the plugin places the mo
 ### ✋ Manual
 
 1. Make sure the game loads mods from its `Mods\` folder.
-2. Take the assembled [`mod/`](../mod) folder from this repository.
-3. Copy it into the game's `Mods\` folder so that the mod folder ends up at:
+2. Download the latest release archive from the
+   [GitHub releases page](https://github.com/space-rangers-mods-workshop/AMod_MapMarker/releases/latest)
+   (or the [Nexus Mods page](https://www.nexusmods.com/spacerangersawarapart/mods/61)).
+3. Unpack the archive into the game's `Mods\` folder so that the mod folder ends up at:
    ```
    <game root>\Mods\Miscellaneous\AMod_MapMarker
    ```
    (The folder must contain `ModuleInfo.txt` at its root — do not nest it an extra level down.)
-4. Launch the game. Open the galaxy map to use the marker.
+4. Launch the game. The panel appears on the space map once you enter a system.
 
 To remove the mod, delete the `AMod_MapMarker` folder.
 
@@ -59,7 +61,7 @@ XenoBigGalaxy (by Xenomorphchyma)
 
 ## 🔗 Source
 
-- [https://github.com/space-rangers-mods-museum/AMod_MapMarker](https://github.com/space-rangers-mods-museum/AMod_MapMarker) — the preserved original (Huk).
+- [https://github.com/space-rangers-mods-workshop/AMod_MapMarker](https://github.com/space-rangers-mods-workshop/AMod_MapMarker)
 
 ## ⚖️ Licence
 
